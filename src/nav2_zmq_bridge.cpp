@@ -50,7 +50,7 @@ public:
         
         // Create timer to tick the tree (same frequency as your template)
         timer_ = this->create_wall_timer(
-            1s, std::bind(&AdaptiveNav2Bridge::tick_tree, this));
+            100ms, std::bind(&AdaptiveNav2Bridge::tick_tree, this));
         
         RCLCPP_INFO(this->get_logger(), "Nav2 Groot Bridge initialized");
         RCLCPP_INFO(this->get_logger(), "ZMQ publisher started on ports 1666/1667");
@@ -244,7 +244,7 @@ private:
         // Convert string status to BT status
         BT::NodeStatus bt_status = BT::NodeStatus::FAILURE;
         if (status == "RUNNING") {
-            bt_status = BT::NodeStatus::IDLE;
+            bt_status = BT::NodeStatus::SUCCESS;
         } else if (status == "SUCCESS") {
             bt_status = BT::NodeStatus::SUCCESS;
         } else if (status == "FAILURE") {
@@ -288,7 +288,7 @@ private:
                    status == BT::NodeStatus::FAILURE ? "FAILURE" : "IDLE");
         if (status_nodes_.find(node_name) != status_nodes_.end()) {
         status_nodes_[node_name]->setStatus(status);
-        //RCLCPP_INFO(this->get_logger(), "🎯 Updated '%s' to %s", node_name.c_str(), ...);
+        
     }
         // The tree structure will still be visible in Groot
         // but dynamic status changes won't work without node references
@@ -302,7 +302,7 @@ private:
         bool has_any_data = has_bt_data_ || has_action_data_;
         if (has_any_data) {
             static int counter = 0;
-            if (++counter % 5 == 0) { // Every 5 seconds
+            if (++counter % 1 == 0) { // Every 5 seconds
                 RCLCPP_INFO(this->get_logger(), 
                     "📊 Nav2 Activity - Compute: %s, Follow: %s, Spin: %s, Wait: %s, Backup: %s",
                     compute_path_active_ ? "ACTIVE" : "idle",
