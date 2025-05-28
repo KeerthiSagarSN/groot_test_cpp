@@ -15,6 +15,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(action_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
@@ -48,6 +49,7 @@ ament_target_dependencies(nav2_zmq_bridge
   std_msgs
   geometry_msgs
   nav2_msgs
+  action_msgs
 )
 
 # Install executables
