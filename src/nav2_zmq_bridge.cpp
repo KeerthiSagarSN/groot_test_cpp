@@ -21,23 +21,22 @@ public:
             "/behavior_tree_status_change", 10,
             std::bind(&Nav2ZmqBridge::bt_status_callback, this, std::placeholders::_1));
 
-        // Create a simple dummy tree for ZMQ publishing
+        // Create a simple dummy tree using only built-in BT.CPP nodes
         BT::BehaviorTreeFactory factory;
         
-        // Create a minimal tree structure that represents Nav2's BT
         const std::string xml_text = R"(
         <root main_tree_to_execute="Nav2Tree">
             <BehaviorTree ID="Nav2Tree">
-                <Sequence name="NavigateWithReplanning">
-                    <Fallback name="PlannerFallback">
-                        <Sequence name="PlanAndMove">
-                            <Action ID="ComputePathToPose" name="ComputePathToPose"/>
-                            <Action ID="FollowPath" name="FollowPath"/>
+                <Sequence name="NavigationSequence">
+                    <Fallback name="NavigationFallback">
+                        <Sequence name="PlanAndExecute">
+                            <AlwaysSuccess name="PlanPath"/>
+                            <AlwaysSuccess name="FollowPath"/>
                         </Sequence>
-                        <Sequence name="RecoveryActions">
-                            <Action ID="ClearEntireCostmap" name="ClearLocalCostmap"/>
-                            <Action ID="Spin" name="Spin"/>
-                            <Action ID="BackUp" name="BackUp"/>
+                        <Sequence name="RecoveryBehaviors">
+                            <AlwaysSuccess name="ClearCostmap"/>
+                            <AlwaysSuccess name="SpinRecovery"/>
+                            <AlwaysSuccess name="BackupRecovery"/>
                         </Sequence>
                     </Fallback>
                 </Sequence>
@@ -64,12 +63,10 @@ public:
 private:
     void bt_log_callback(const nav2_msgs::msg::BehaviorTreeLog::SharedPtr msg) {
         // Check what fields are actually available in the BehaviorTreeLog message
-        // Since 'event' field doesn't exist, let's see what fields are available
         RCLCPP_DEBUG(this->get_logger(), "Received BT log message with timestamp: %ld", 
                     msg->timestamp.sec);
         
         // Process the behavior tree log and update our dummy tree status
-        // This would require more complex parsing to map Nav2's actual BT to our dummy tree
         last_log_time_ = this->get_clock()->now();
         has_received_bt_data_ = true;
     }
