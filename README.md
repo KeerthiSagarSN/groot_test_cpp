@@ -18,4 +18,6 @@ ros2 run groot_test_cpp groot_test_node
 ```
 ros2 run groot Groot
 ```
+Nav2 for Behaviour Tree and Display
 
+![Navigation BT Tree with Groot1](./Images/nav2_bt_tree_groot1.gif)
