@@ -11,7 +11,7 @@
 
 using namespace std::chrono_literals;
 
-// Nav2 Status Node - Similar to your ToggleStatus but controlled by Nav2 activity
+// Nav2 Status Node - Trying to use the boilerplate code which runs decently but now with nav2
 class Nav2StatusNode : public BT::SyncActionNode {
 public:
     Nav2StatusNode(const std::string& name, const BT::NodeConfiguration& config)
@@ -63,7 +63,7 @@ public:
 
 private:
     void setupBehaviorTreeSubscriptions() {
-        // Try different possible topic names for BT status
+        // Weirdness i dont undesrand why this is like this
         bt_status_sub1_ = this->create_subscription<nav2_msgs::msg::BehaviorTreeStatusChange>(
             "/behavior_tree_status_change", 10,
             std::bind(&AdaptiveNav2Bridge::bt_status_callback, this, std::placeholders::_1));
@@ -82,7 +82,7 @@ private:
     }
     
     void setupActionSubscriptions() {
-        // Monitor action servers - using exact topic names from your action list
+        // Monitor action servers - got this from the action lists from KMRiiwa navigation stack
         nav_action_sub_ = this->create_subscription<action_msgs::msg::GoalStatusArray>(
             "/navigate_to_pose/_action/status", 10,
             std::bind(&AdaptiveNav2Bridge::nav_action_callback, this, std::placeholders::_1));
@@ -122,7 +122,7 @@ private:
         factory.registerNodeType<Nav2StatusNode>("Nav2Backup");
         factory.registerNodeType<Nav2StatusNode>("Nav2Clear");
         
-        // Define behavior tree using XML (same structure as your template)
+        // Define behavior tree using XML (same structure as KMRIIWA- template) - Need to see PAL Robotics template to extend
         const std::string xml_text = R"(
         <root main_tree_to_execute="Nav2Tree">
             <BehaviorTree ID="Nav2Tree">
@@ -154,14 +154,13 @@ private:
             }
         }
         
-        // Instead of trying to get node references, we'll store them during registration
-        // This approach is compatible with more BT.CPP versions
+        // Instead of trying to get node references, sotring during registration
+        // This approach is compatible with more BT.CPP versions - I hope, need to see, if is works
         RCLCPP_INFO(this->get_logger(), "Behavior tree created");
         RCLCPP_INFO(this->get_logger(), "Note: Node status updates may be limited without direct node references");
     }
     
     void checkAvailableTopics() {
-        // This will help us understand what's actually available
         auto timer = this->create_wall_timer(5s, [this]() {
             RCLCPP_INFO(this->get_logger(), 
                 "📊 Data Sources - BT Messages: %d, Action Messages: %d, Total: %d",
@@ -176,7 +175,7 @@ private:
         this->create_wall_timer(6s, [timer]() { timer->cancel(); });
     }
 
-    // Behavior Tree Callbacks
+    // Behavior Tree Callbacks - All thiese gifs were generated using Claude - Haha, nmice
     void bt_status_callback(const nav2_msgs::msg::BehaviorTreeStatusChange::SharedPtr msg) {
         bt_message_count_++;
         has_bt_data_ = true;
@@ -195,7 +194,7 @@ private:
         RCLCPP_DEBUG(this->get_logger(), "Received BT log with timestamp: %d", msg->timestamp.sec);
     }
     
-    // Action Callbacks
+    // Action Callbacks - From KMRIIWA - Action nodes where this
     void nav_action_callback(const action_msgs::msg::GoalStatusArray::SharedPtr msg) {
         processActionStatus("Navigate", msg);
     }
@@ -294,7 +293,7 @@ private:
         // but dynamic status changes won't work without node references
     }
     
-    // Main tick function (same as your template)
+    // Main tick function - I am going to remove this later, since it is causing slowing down in the terminals
     void tick_tree() {
         RCLCPP_INFO(this->get_logger(), "Ticking the Nav2 tree...");
         
