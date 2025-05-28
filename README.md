@@ -3,7 +3,7 @@
 ### Dependencies
 - Groot1
 
-#### Testing Groot Behaviour Tree with boiler plate code
+#### Testing Groot Behaviour Tree with boiler plate code for nav2
 
 In a terminal: Inside ros2 workspace/src
 ```
